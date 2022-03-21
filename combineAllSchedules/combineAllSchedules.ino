@@ -12,18 +12,14 @@
 RTC_DS1307 rtc;
 
 int schState = 0;
+int schIndex = 0;
 
-int schStart = 0;
-int schEnd = 6;
+//int schStart = 0;
+//int schEnd = 6;
 
 
 int currentPeriod = 0;
 int period = 0;
-
-int schBlk [5][5] {
-  {0, 6},  //schedule regular
-  {7, 13}, //schedule advisory
-};
 
 // Starting/end times of the period
 int schReg[65][2] {
@@ -165,15 +161,6 @@ void setup() {
   int i;
   Serial.begin(9600);
 
-  if (schState == 0) {
-    schStart = 0;
-    schEnd = 6;
-  } else {
-    schStart = 6;
-    schEnd = 13;
-  }
-
-
   pinMode(GREEN, OUTPUT);
   pinMode(YELLOW, OUTPUT);
   pinMode(RED, OUTPUT);
@@ -254,14 +241,14 @@ void loop() {
 
 
   // Function to turn off the lights when theres no school
-  if (nowTime < convert_time(schReg[0][0], schReg[0][1]) || nowTime > convert_time(schReg[15][0], schReg[15][1])) {
+  if (nowTime < convert_time(schReg[schIndex][0], schReg[schIndex][1]) || nowTime > convert_time(schReg[15][0], schReg[15][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_OFF);
     Serial.println(" ALL OFF");
 
     //Turn only red light on during lunch time
-  } else if ((nowTime >= convert_time(schReg[10][0], schReg[10][1])) && nowTime <= convert_time(schReg[11][0], schReg[11][1])) {
+  } else if ((nowTime >= convert_time(schReg[schIndex + 10][0], schReg[10][1])) && nowTime <= convert_time(schReg[11][0], schReg[11][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_ON);
