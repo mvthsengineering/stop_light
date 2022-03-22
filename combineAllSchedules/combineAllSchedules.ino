@@ -241,14 +241,14 @@ void loop() {
 
 
   // Function to turn off the lights when theres no school
-  if (nowTime < convert_time(schReg[schIndex][0], schReg[schIndex][1]) || nowTime > convert_time(schReg[15][0], schReg[15][1])) {
+  if (nowTime < convert_time(schReg[0][0], schReg[0][1]) || nowTime > convert_time(schReg[15][0], schReg[15][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_OFF);
     Serial.println(" ALL OFF");
 
     //Turn only red light on during lunch time
-  } else if ((nowTime >= convert_time(schReg[schIndex + 10][0], schReg[10][1])) && nowTime <= convert_time(schReg[11][0], schReg[11][1])) {
+  } else if ((nowTime >= convert_time(schReg[0 + 10][0], schReg[10][1])) && nowTime <= convert_time(schReg[11][0], schReg[11][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_ON);
