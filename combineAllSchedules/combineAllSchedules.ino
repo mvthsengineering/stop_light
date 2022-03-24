@@ -9,6 +9,8 @@
 #define LIGHT_ON  0
 #define LIGHT_OFF 1
 #define WARNING_TIME 5
+#define SWITCHA 5
+#define SWITCHB 6
 RTC_DS1307 rtc;
 
 
@@ -23,7 +25,7 @@ int period = schIndex;
 int nowTime = 460;
 
 //int currentPeriod = 0;
-int period = 0;
+//int period = 0;
 
 // Starting/end times of the period
 int schReg[65][2] {
