@@ -11,14 +11,18 @@
 #define WARNING_TIME 5
 RTC_DS1307 rtc;
 
-int schState = 0;
-int schIndex = 0;
 
-//int schStart = 0;
-//int schEnd = 6;
+int schStart = 16;
+int schEnd = 29;
+int schJump = 7; //how many periods there are in the day, how many times it jumps
+int lunch = 10;
 
+//int currentPeriod = 0;
+int schIndex = 16;
+int period = schIndex;
+int nowTime = 460;
 
-int currentPeriod = 0;
+//int currentPeriod = 0;
 int period = 0;
 
 // Starting/end times of the period
@@ -164,6 +168,8 @@ void setup() {
   pinMode(GREEN, OUTPUT);
   pinMode(YELLOW, OUTPUT);
   pinMode(RED, OUTPUT);
+  pinMode(SWITCHA, INPUT_PULLUP);
+  pinMode(SWITCHB, INPUT_PULLUP);
 
   if (! rtc.begin()) {
     Serial.println("Couldn't find RTC");
@@ -202,6 +208,8 @@ void setup() {
 
 void loop() {
   int conv_time;
+  int switcha = digitalRead(SWITCHA);
+  int switchb = digitalRead(SWITCHB);
 
   DateTime now = rtc.now();
   int hrs = now.hour();
@@ -239,6 +247,40 @@ void loop() {
   Serial.print("secs:");
   Serial.print(secs);
 
+//Controls the schedules
+
+  if  (switcha == HIGH && switchb == HIGH) {
+    //Regular Schedule
+    schStart = 0;
+    schEnd = 15;
+    schJump = 8;
+    lunch = 10;
+    Serial.print(" REGULAR SCHEDULE");
+    
+  } else if (switcha == LOW && switchb == LOW) {
+    //Early Release Schedule
+    schStart = 16;
+    schEnd = 29;
+    schJump = 7;
+    lunch = -1;
+    Serial.print(" EARLY RELEASE");
+
+  } else if (switcha == HIGH && switchb == LOW) {
+    //Advisory Activity Schedule
+    schStart = 30;
+    schEnd = 47;
+    schJump = 9;
+    lunch = 42;
+    Serial.print(" ADVISORY ACTIVITY ");
+    
+  } else if (switcha == LOW && switchb == HIGH) {
+    //Extended Advisory Schedule
+    schStart = 48;
+    schEnd = 63;
+    schJump = 8;
+    lunch = 58;
+    Serial.print(" EXTENDED ADVISORY");
+  }
 
   // Function to turn off the lights when theres no school
   if (nowTime < convert_time(schReg[0][0], schReg[0][1]) || nowTime > convert_time(schReg[15][0], schReg[15][1])) {
