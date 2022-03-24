@@ -249,7 +249,7 @@ void loop() {
   Serial.print("secs:");
   Serial.print(secs);
 
-//Controls the schedules
+  //Controls the schedules
 
   if  (switcha == HIGH && switchb == HIGH) {
     //Regular Schedule
@@ -257,14 +257,18 @@ void loop() {
     schEnd = 15;
     schJump = 8;
     lunch = 10;
+
+    schIndex = 0;
     Serial.print(" REGULAR SCHEDULE");
-    
+
   } else if (switcha == LOW && switchb == LOW) {
     //Early Release Schedule
     schStart = 16;
     schEnd = 29;
     schJump = 7;
     lunch = -1;
+
+    schIndex = 16;
     Serial.print(" EARLY RELEASE");
 
   } else if (switcha == HIGH && switchb == LOW) {
@@ -273,26 +277,30 @@ void loop() {
     schEnd = 47;
     schJump = 9;
     lunch = 42;
+
+    schIndex = 30;
     Serial.print(" ADVISORY ACTIVITY ");
-    
+
   } else if (switcha == LOW && switchb == HIGH) {
     //Extended Advisory Schedule
     schStart = 48;
     schEnd = 63;
     schJump = 8;
     lunch = 58;
+
+    schIndex = 48;
     Serial.print(" EXTENDED ADVISORY");
   }
 
   // Function to turn off the lights when theres no school
-  if (nowTime < convert_time(schReg[0][0], schReg[0][1]) || nowTime > convert_time(schReg[15][0], schReg[15][1])) {
+  if (nowTime < convert_time(schReg[schStart][0], schReg[schStart][1]) || nowTime > convert_time(schReg[schEnd][0], schReg[schEnd][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_OFF);
     Serial.println(" ALL OFF");
 
     //Turn only red light on during lunch time
-  } else if ((nowTime >= convert_time(schReg[0 + 10][0], schReg[10][1])) && nowTime <= convert_time(schReg[11][0], schReg[11][1])) {
+  } else if ((nowTime >= convert_time(schReg[lunch][0], schReg[lunch][1])) && nowTime <= convert_time(schReg[lunch + 1][0], schReg[lunch + 1][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_ON);
