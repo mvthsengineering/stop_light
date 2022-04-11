@@ -34,7 +34,7 @@ int schReg[65][2] {
   //Index (0 - 15)
   // Block 0 (ADVISORY)
   {7, 45},  //465
-  {7, 59},  //469
+  {7, 49},  //469
   // Block 1 (PERIOD 1)
   {7, 52},  //472
   {8, 48},  //528
@@ -239,14 +239,14 @@ void loop() {
   Serial.print("  ");
   Serial.print("Period ");
   Serial.print(period / 2);
-  Serial.print("  ");
-  Serial.print("hrs:");
+  Serial.print("  time: ");
+  //Serial.print("hrs:");
   Serial.print(hrs);
-  Serial.print("  ");
-  Serial.print("mins:");
+  Serial.print(":");
+  //Serial.print("mins:");
   Serial.print(mins);
-  Serial.print("  ");
-  Serial.print("secs:");
+  Serial.print(":");
+  //  Serial.print("secs:");
   Serial.print(secs);
 
   //Controls the schedules
@@ -257,9 +257,8 @@ void loop() {
     schEnd = 15;
     schJump = 8;
     lunch = 10;
-
     schIndex = 0;
-    Serial.print(" REGULAR SCHEDULE");
+    Serial.print(" /REGULAR SCHEDULE/");
 
   } else if (switcha == LOW && switchb == LOW) {
     //Early Release Schedule
@@ -267,9 +266,8 @@ void loop() {
     schEnd = 29;
     schJump = 7;
     lunch = -1;
-
     schIndex = 16;
-    Serial.print(" EARLY RELEASE");
+    Serial.print(" /EARLY RELEASE/");
 
   } else if (switcha == HIGH && switchb == LOW) {
     //Advisory Activity Schedule
@@ -277,9 +275,8 @@ void loop() {
     schEnd = 47;
     schJump = 9;
     lunch = 42;
-
     schIndex = 30;
-    Serial.print(" ADVISORY ACTIVITY ");
+    Serial.print(" /ADVISORY ACTIVITY/ ");
 
   } else if (switcha == LOW && switchb == HIGH) {
     //Extended Advisory Schedule
@@ -287,42 +284,55 @@ void loop() {
     schEnd = 63;
     schJump = 8;
     lunch = 58;
-
     schIndex = 48;
-    Serial.print(" EXTENDED ADVISORY");
+    Serial.print(" /EXTENDED ADVISORY/");
   }
+
+
+  if (digitalRead(GREEN) ==  LIGHT_ON) {
+    Serial.print(" |GREEN|");
+  }
+  if (digitalRead(YELLOW) == LIGHT_ON) {
+    Serial.print(" |YELLOW|");
+  }
+  if (digitalRead(RED) ==  LIGHT_ON) {
+    Serial.print(" |RED|");
+  }
+
+
 
   // Function to turn off the lights when theres no school
   if (nowTime < convert_time(schReg[schStart][0], schReg[schStart][1]) || nowTime > convert_time(schReg[schEnd][0], schReg[schEnd][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_OFF);
-    Serial.println(" ALL OFF");
+    period = schIndex;
+    Serial.println(" (OUTSIDE SCHOOL)");
 
     //Turn only red light on during lunch time
   } else if ((nowTime >= convert_time(schReg[lunch][0], schReg[lunch][1])) && nowTime <= convert_time(schReg[lunch + 1][0], schReg[lunch + 1][1])) {
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_ON);
-    Serial.println("LUNCH");
+    Serial.println(" (LUNCH)");
 
     // Class time
-  } else if (nowTime <= endPeriod - WARNING_TIME) {
+  } else if (nowTime < endPeriod - WARNING_TIME) {
     digitalWrite(GREEN, LIGHT_ON);
     digitalWrite(YELLOW, LIGHT_OFF);
     digitalWrite(RED, LIGHT_OFF);
-    Serial.println(" GREEN ON");
+    Serial.println(" (CLASS)");
 
     // Five minutes before period ends
-  } else if (nowTime <= endPeriod) {
+  } else if (nowTime < endPeriod) {
     digitalWrite(YELLOW, LIGHT_ON);
     digitalWrite(GREEN, LIGHT_OFF);
     digitalWrite(RED, LIGHT_OFF);
-    Serial.println(" YELLOW ON");
+    Serial.println(" (WARNING)");
 
     // Passing time
   } else if (nowTime >= endPeriod && nowTime <= nextPeriod) {
-    Serial.println(" RED ON");
+    Serial.println(" (PASSING)");
     digitalWrite(RED, LIGHT_ON);
     digitalWrite(YELLOW, LIGHT_OFF);
 
@@ -333,6 +343,7 @@ void loop() {
     Serial.println("!NEW PERIOD!");
     period += 2;
   }
+
 
   delay(1000);
 
