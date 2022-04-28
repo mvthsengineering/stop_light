@@ -1,8 +1,7 @@
 
 #include "RTClib.h"
-//#define PERIOD 2
-//#define WARNING 3
-//#define PASSING 4
+#include <avr/wdt.h>
+
 #define GREEN 2
 #define YELLOW 3
 #define RED 4
